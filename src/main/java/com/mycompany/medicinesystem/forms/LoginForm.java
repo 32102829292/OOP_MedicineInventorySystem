@@ -96,7 +96,7 @@ public class LoginForm extends javax.swing.JFrame {
                 txtUnameActionPerformed(evt);
             }
         });
-        jPanel1.add(txtUname, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 170, 217, 20));
+        jPanel1.add(txtUname, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 170, 217, -1));
 
         jLabel4.setText("Email:");
         jPanel1.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 140, -1, -1));
