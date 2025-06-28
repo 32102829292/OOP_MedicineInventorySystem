@@ -5,6 +5,10 @@
 package com.mycompany.medicinesystem.forms;
 
 import com.mycompany.medicinesystem.config.DBConnector;
+import com.mycompany.medicinesystem.config.DataInitializer;
+import com.mycompany.medicinesystem.controller.UserController;
+import com.mycompany.medicinesystem.entities.UserEntity;
+import com.mycompany.medicinesystem.utilities.UserUtilities;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -30,6 +34,11 @@ public class Register extends javax.swing.JFrame {
      */
     public Register() {
         initComponents();
+        btnRegister.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnRegisterActionPerformed(evt);
+    }
+});
     }    
 
        
@@ -285,50 +294,40 @@ public class Register extends javax.swing.JFrame {
 
     private void btnRegisterActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRegisterActionPerformed
         // TODO add your handling code here
+        String fname = txtFirstName.getText().trim();
+        String mname = txtMiddleName.getText().trim();
+        String lname = txtLastName1.getText().trim();
+        String email = txtEmail.getText().trim();
+        String pass = new String(txtPass.getPassword()).trim();
+        String confirm = new String(txtConfirmPass.getPassword()).trim();
+
+        if (!UserUtilities.isValidEmail(email)) {
+            JOptionPane.showMessageDialog(this, "Invalid email format.");
+            return;
+        }
+
+        if (!pass.equals(confirm)) {
+            JOptionPane.showMessageDialog(this, "Passwords do not match.");
+            return;
+        }
+
+        if (!UserUtilities.isStrongPassword(pass)) {
+            JOptionPane.showMessageDialog(this, "Password must be at least 8 characters.");
+            return;
+        }
+
         try {
-            String firstname = txtFirstName.getText();
-            String middlename = txtMiddleName.getText();
-            String lastname = txtLastName.getText();
-            String email = txtEmail.getText();
-            String password = new String(txtPass.getPassword());
-            String confirmPass = new String(txtConfirmPass.getPassword());
-
-            String emailRegex = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$";
-
-            if (!email.matches(emailRegex)) {
-                JOptionPane.showMessageDialog(null, "Invalid email format.");
-                return;
+            UserEntity user = new UserEntity(fname, mname, lname, email, pass);
+            boolean success = UserController.registerUser(user);
+            if (success) {
+                JOptionPane.showMessageDialog(this, "Registration successful!");
+                this.dispose();
+                new LoginForm().setVisible(true);
+            } else {
+                JOptionPane.showMessageDialog(this, "Email already registered.");
             }
-
-            if (!password.equals(confirmPass)) {
-                JOptionPane.showMessageDialog(null, "Unmatched Password. Try Again.");
-                return;
-            }
-
-            Class.forName("org.postgresql.Driver");
-            Connection conn = DriverManager.getConnection(
-                    "jdbc:postgresql://localhost:5432/MedicineDB", "postgres", "123");
-
-            String sqlquery = "INSERT INTO \"Register\".\"Registered_user\" "
-                    + "(firstname, middlename, lastname, email, password) "
-                    + "VALUES (?, ?, ?, ?, ?)";
-
-            PreparedStatement pat = conn.prepareStatement(sqlquery);
-            pat.setString(1, firstname);
-            pat.setString(2, middlename);
-            pat.setString(3, lastname);
-            pat.setString(4, email);
-            pat.setString(5, password);
-
-            pat.executeUpdate();
-
-            JOptionPane.showMessageDialog(null, "Registration successful!");
-            this.dispose();
-            LoginForm login = new LoginForm();
-            login.setVisible(true);
-
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(null, "An error occurred during registration: " + e.getMessage());
+            JOptionPane.showMessageDialog(this, "Error: " + e.getMessage());
             e.printStackTrace();
         }
 
@@ -354,16 +353,8 @@ public class Register extends javax.swing.JFrame {
             logger.log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
-        Connection connection = DBConnector.connect();
-        if (connection != null) {
-            try {
-                connection.close();
-                System.out.println("Connection closed.");
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        }
-        
+        DataInitializer.initializeDatabase();
+        /*        new LoginForm().setVisible(true);*/
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(() -> new Register().setVisible(true));
     }

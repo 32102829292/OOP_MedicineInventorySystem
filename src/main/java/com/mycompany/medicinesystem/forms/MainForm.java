@@ -34,7 +34,6 @@ public class MainForm extends javax.swing.JFrame {
         jPanel2 = new javax.swing.JPanel();
         jPanel3 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
-        btnProfile = new javax.swing.JButton();
         btnLogOut = new javax.swing.JButton();
         btnLogs = new javax.swing.JButton();
 
@@ -76,19 +75,7 @@ public class MainForm extends javax.swing.JFrame {
         jLabel1.setFont(new java.awt.Font("Arial Black", 1, 36)); // NOI18N
         jLabel1.setForeground(new java.awt.Color(0, 0, 51));
         jLabel1.setText("Dashboard");
-        jPanel1.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(210, 90, -1, -1));
-
-        btnProfile.setBackground(new java.awt.Color(0, 102, 102));
-        btnProfile.setFont(new java.awt.Font("Arial Black", 1, 12)); // NOI18N
-        btnProfile.setForeground(java.awt.Color.white);
-        btnProfile.setIcon(new javax.swing.ImageIcon("C:\\Users\\Admin\\Downloads\\user (1).png")); // NOI18N
-        btnProfile.setText("Profile");
-        btnProfile.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnProfileActionPerformed(evt);
-            }
-        });
-        jPanel1.add(btnProfile, new org.netbeans.lib.awtextra.AbsoluteConstraints(151, 170, 350, 91));
+        jPanel1.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(210, 120, -1, -1));
 
         btnLogOut.setBackground(new java.awt.Color(255, 102, 102));
         btnLogOut.setFont(new java.awt.Font("Arial Black", 1, 12)); // NOI18N
@@ -100,7 +87,7 @@ public class MainForm extends javax.swing.JFrame {
                 btnLogOutActionPerformed(evt);
             }
         });
-        jPanel1.add(btnLogOut, new org.netbeans.lib.awtextra.AbsoluteConstraints(150, 400, 350, 91));
+        jPanel1.add(btnLogOut, new org.netbeans.lib.awtextra.AbsoluteConstraints(150, 330, 350, 91));
 
         btnLogs.setBackground(new java.awt.Color(0, 153, 153));
         btnLogs.setFont(new java.awt.Font("Arial Black", 0, 12)); // NOI18N
@@ -112,7 +99,7 @@ public class MainForm extends javax.swing.JFrame {
                 btnLogsActionPerformed(evt);
             }
         });
-        jPanel1.add(btnLogs, new org.netbeans.lib.awtextra.AbsoluteConstraints(150, 290, 350, 90));
+        jPanel1.add(btnLogs, new org.netbeans.lib.awtextra.AbsoluteConstraints(150, 210, 350, 90));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -136,16 +123,9 @@ public class MainForm extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_btnLogOutActionPerformed
 
-    private void btnProfileActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnProfileActionPerformed
-        // TODO add your handling code here:
-      profile Profile=new profile();
-      Profile.setVisible(true);
-      this.dispose();
-    }//GEN-LAST:event_btnProfileActionPerformed
-
     private void btnLogsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLogsActionPerformed
         // TODO add your handling code here:
-        ViewLogs view=new ViewLogs();
+        ViewLogs view= new ViewLogs();
         view.setVisible(true);
         this.dispose();
     }//GEN-LAST:event_btnLogsActionPerformed
@@ -177,7 +157,6 @@ public class MainForm extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnLogOut;
     private javax.swing.JButton btnLogs;
-    private javax.swing.JButton btnProfile;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;

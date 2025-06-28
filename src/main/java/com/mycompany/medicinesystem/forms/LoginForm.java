@@ -4,6 +4,11 @@
  */
 package com.mycompany.medicinesystem.forms;
 
+import com.mycompany.medicinesystem.controller.UserController;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import javax.swing.*;
 
 /**
@@ -35,7 +40,7 @@ public class LoginForm extends javax.swing.JFrame {
         jLabel1 = new javax.swing.JLabel();
         jPanel3 = new javax.swing.JPanel();
         jPanel4 = new javax.swing.JPanel();
-        txtUname = new javax.swing.JTextField();
+        txtEmail = new javax.swing.JTextField();
         jLabel4 = new javax.swing.JLabel();
         txtPass = new javax.swing.JPasswordField();
         jLabel5 = new javax.swing.JLabel();
@@ -91,12 +96,12 @@ public class LoginForm extends javax.swing.JFrame {
 
         jPanel1.add(jPanel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 370, 480, 30));
 
-        txtUname.addActionListener(new java.awt.event.ActionListener() {
+        txtEmail.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txtUnameActionPerformed(evt);
+                txtEmailActionPerformed(evt);
             }
         });
-        jPanel1.add(txtUname, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 170, 217, -1));
+        jPanel1.add(txtEmail, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 170, 217, -1));
 
         jLabel4.setText("Email:");
         jPanel1.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 140, -1, -1));
@@ -147,9 +152,9 @@ public class LoginForm extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void txtUnameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtUnameActionPerformed
+    private void txtEmailActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtEmailActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_txtUnameActionPerformed
+    }//GEN-LAST:event_txtEmailActionPerformed
 
     private void txtPassActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtPassActionPerformed
         // TODO add your handling code here:
@@ -169,18 +174,20 @@ public class LoginForm extends javax.swing.JFrame {
 
     private void btnLoginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLoginActionPerformed
         // TODO add your handling code here:
-        String uname = txtUname.getText();
-        String pass = new String(txtPass.getPassword());
-        if (!uname.equals(Register.registered_Email)) {
-            JOptionPane.showMessageDialog(null, "User not registered. Please sign up.");
+        String email = txtEmail.getText().trim().toLowerCase();
+        String pass = new String(txtPass.getPassword()).trim();
 
-        } else if (!uname.equals(Register.registered_Email) || !pass.equals(Register.registered_pass)) {
-            JOptionPane.showMessageDialog(null, "Invalid username or password. Try again.");
-        } else {
-            JOptionPane.showMessageDialog(null, "Welcome back, " + Register.registered_FName+ " " +Register.registered_LName + "!");
-            MainForm main_form = new MainForm();
-            main_form.setVisible(true);
-            this.dispose();
+        try {
+            if (UserController.login(email, pass)) {
+                JOptionPane.showMessageDialog(this, "Login successful!");
+                new MainForm().setVisible(true);
+                this.dispose();
+            } else {
+                JOptionPane.showMessageDialog(this, "Invalid email or password.");
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Login error: " + e.getMessage());
+            e.printStackTrace();
         }
     }//GEN-LAST:event_btnLoginActionPerformed
 
@@ -219,8 +226,8 @@ public class LoginForm extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
+    private javax.swing.JTextField txtEmail;
     private javax.swing.JPasswordField txtPass;
-    private javax.swing.JTextField txtUname;
     // End of variables declaration//GEN-END:variables
 
 }

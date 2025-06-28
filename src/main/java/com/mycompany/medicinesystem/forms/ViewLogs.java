@@ -4,7 +4,14 @@
  */
 package com.mycompany.medicinesystem.forms;
 
+import com.mycompany.medicinesystem.controller.MedicineController;
+import com.mycompany.medicinesystem.entities.MedicineEntity;
 import java.awt.BorderLayout;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.util.List;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
@@ -21,8 +28,9 @@ public class ViewLogs extends javax.swing.JFrame {
 
     /**
      * Creates new form ViewLogs
+     * @throws java.lang.Exception
      */
-    public ViewLogs() {
+    public ViewLogs(){
         initComponents();
     }
     /**
@@ -38,6 +46,7 @@ public class ViewLogs extends javax.swing.JFrame {
         jPanel2 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         btnBack = new javax.swing.JButton();
+        btnRefresh = new javax.swing.JButton();
         jPanel3 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         JTable1 = new javax.swing.JTable();
@@ -67,6 +76,16 @@ public class ViewLogs extends javax.swing.JFrame {
             }
         });
 
+        btnRefresh.setBackground(new java.awt.Color(0, 153, 204));
+        btnRefresh.setFont(new java.awt.Font("Ebrima", 1, 12)); // NOI18N
+        btnRefresh.setForeground(java.awt.Color.white);
+        btnRefresh.setText("Refresh");
+        btnRefresh.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnRefreshActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
@@ -74,9 +93,11 @@ public class ViewLogs extends javax.swing.JFrame {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
                 .addGap(15, 15, 15)
                 .addComponent(btnBack)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 158, Short.MAX_VALUE)
                 .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 242, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(184, 184, 184))
+                .addGap(83, 83, 83)
+                .addComponent(btnRefresh)
+                .addGap(26, 26, 26))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -84,7 +105,9 @@ public class ViewLogs extends javax.swing.JFrame {
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addGap(31, 31, 31)
-                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 57, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 57, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(btnRefresh)))
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addGap(15, 15, 15)
                         .addComponent(btnBack)))
@@ -208,92 +231,158 @@ public class ViewLogs extends javax.swing.JFrame {
     }//GEN-LAST:event_btnBackActionPerformed
 
     private void btnAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddActionPerformed
-        // TODO add your handling code here:
-        try {
-        String id = JOptionPane.showInputDialog("Enter Medicine ID:");
-        if (id == null) return;
+        boolean validInput = false;
 
-        String medName = JOptionPane.showInputDialog("Enter Medicine Name:");
-        if (medName == null) return;
+        while (!validInput) {
+            try {
+                int id = Integer.parseInt(JOptionPane.showInputDialog("Enter Medicine No:"));
+                String name = JOptionPane.showInputDialog("Enter Medicine Name:");
 
-        String price = JOptionPane.showInputDialog("Enter Medicine Price:");
-        if (price== null) return;
+                if (name == null || name.trim().isEmpty()) {
+                    JOptionPane.showMessageDialog(this, "Medicine Name cannot be empty. Please enter again.");
+                    continue;
+                }
 
-        String stocks = JOptionPane.showInputDialog("Enter Medicine Stocks:");
-        if (stocks == null) return;
+                double price = Double.parseDouble(JOptionPane.showInputDialog("Enter Medicine Price:"));
+                int stocks = Integer.parseInt(JOptionPane.showInputDialog("Enter Medicine Stocks:"));
 
+                MedicineEntity med = new MedicineEntity(id, name, price, stocks);
+                if (MedicineController.addMedicine(med)) {
+                    DefaultTableModel model = (DefaultTableModel) JTable1.getModel();
+                    model.addRow(new Object[]{id, name, price, stocks});
+                    JOptionPane.showMessageDialog(this, "Medicine added!");
+                    validInput = true; 
+                } else {
+                    JOptionPane.showMessageDialog(this, "Add failed.");
+                }
 
-        double addprice = Double.parseDouble(price);
-        int addstocks = Integer.parseInt(stocks);
-        int medicineId = Integer.parseInt(id);
-
-        Object[] rowData = {medicineId, medName, addprice, addstocks};
-
-        DefaultTableModel model = (DefaultTableModel) JTable1.getModel();
-        model.addRow(rowData);
-
-        System.out.println("Row added: " + medicineId + ", " + medName + ", " + addprice + ", " + addstocks);
-        } catch (Exception ex) {
-        JOptionPane.showMessageDialog(this, "Error: " + ex.getMessage());
+            } catch (NumberFormatException e) {
+                JOptionPane.showMessageDialog(this, "Invalid number format. Please enter valid numbers.");
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(this, "Error: " + e.getMessage());
+                e.printStackTrace();
+            }
         }
     }//GEN-LAST:event_btnAddActionPerformed
 
     private void btnDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteActionPerformed
         // TODO add your handling code here:
         DefaultTableModel model = (DefaultTableModel) JTable1.getModel();
-        int selectedRow = JTable1.getSelectedRow();
+        int row = JTable1.getSelectedRow();
 
-        if (selectedRow == -1) {
-            JOptionPane.showMessageDialog(this, "Please select a row to delete.");
-        } else {
-            int confirm = JOptionPane.showConfirmDialog(this, "Are you sure you want to delete this row?", "Confirm Delete", JOptionPane.YES_NO_OPTION);
-            if (confirm == JOptionPane.YES_OPTION) {
-                model.removeRow(selectedRow);
+        if (row == -1) {
+            JOptionPane.showMessageDialog(this, "Please select a row.");
+            return;
+        }
+
+        int id = (int) model.getValueAt(row, 0);
+
+        try {
+            if (MedicineController.deleteMedicine(id)) {
+                model.removeRow(row);
+                JOptionPane.showMessageDialog(this, "Deleted successfully.");
+            } else {
+                JOptionPane.showMessageDialog(this, "Delete failed.");
             }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Error: " + e.getMessage());
+            e.printStackTrace();
         }
     }//GEN-LAST:event_btnDeleteActionPerformed
 
     private void btnUpdateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUpdateActionPerformed
-        // TODO add your handling code here:
-        try{
-            String newID=JOptionPane.showInputDialog("Enter ID Medicine: ");
-            if (newID == null) return;
-            
-            String newName=JOptionPane.showInputDialog("Enter new Medicine Name: ");
-            if (newName == null) return;
-            
-            String newPrice=JOptionPane.showInputDialog("Enter new Medicine Price: ");
-            if (newPrice == null) return;
-            
-            String newStocks=JOptionPane.showInputDialog("Enter updated Stocks: ");
-            if (newStocks == null) return;
-            
-            
-            double newprice = Double.parseDouble(newPrice);
-            int newstocks = Integer.parseInt(newStocks);
-            int newmedicineId = Integer.parseInt(newID);
-            
-            DefaultTableModel model=(DefaultTableModel) JTable1.getModel();
-            boolean found= false;
-            
-            for (int i=0; i<model.getRowCount(); i++){
-                int existingID= Integer.parseInt(model.getValueAt(i,0).toString());
-                if (existingID==newmedicineId){
-                    model.setValueAt(newName,i, 1);
-                    model.setValueAt(newprice,i, 2);
-                    model.setValueAt(newstocks,i, 3);
-                    found=true;
-                    break;                           
+        // TODO add your handling code here:                                        
+        boolean validInput = false;
+
+        while (!validInput) {
+            try {
+                String idInput = JOptionPane.showInputDialog("Enter Medicine No:");
+                if (idInput == null) {
+                    return; 
                 }
-            }
-            if (!found){
-                JOptionPane.showMessageDialog(this,"Medicine ID not found.");
+                int id = Integer.parseInt(idInput);
+
+                String name = JOptionPane.showInputDialog("Enter Medicine Name:");
+                if (name == null || name.trim().isEmpty()) {
+                    JOptionPane.showMessageDialog(this, "Medicine Name cannot be empty. Please enter again.");
+                    continue;
+                }
+
+                String priceInput = JOptionPane.showInputDialog("Enter Medicine Price:");
+                if (priceInput == null) {
+                    return; 
+                }
+                double price = Double.parseDouble(priceInput);
+
+                String stocksInput = JOptionPane.showInputDialog("Enter Medicine Stocks:");
+                if (stocksInput == null) {
+                    return; 
+                }
+                int stocks = Integer.parseInt(stocksInput);
+
+                MedicineEntity med = new MedicineEntity(id, name, price, stocks);
+
+                if (MedicineController.updateMedicine(med)) {
+                    DefaultTableModel model = (DefaultTableModel) JTable1.getModel();
+                    boolean found = false;
+                    for (int i = 0; i < model.getRowCount(); i++) {
+                        if ((int) model.getValueAt(i, 0) == id) {
+                            model.setValueAt(name, i, 1);
+                            model.setValueAt(price, i, 2);
+                            model.setValueAt(stocks, i, 3);
+                            found = true;
+                            break;
+                        }
+                    }
+
+                    if (found) {
+                        JOptionPane.showMessageDialog(this, "Medicine updated!");
+                    } else {
+                        JOptionPane.showMessageDialog(this, "Updated in DB, but not found in table.");
+                    }
+
+                    validInput = true; 
+                } else {
+                    JOptionPane.showMessageDialog(this, "Update failed in database.");
+                }
+            } catch (NumberFormatException e) {
+                JOptionPane.showMessageDialog(this, "Invalid number format. Please enter valid numbers.");
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(this, "Error: " + e.getMessage());
+                e.printStackTrace();
             }
         }
-         catch(Exception ex){
-                JOptionPane.showMessageDialog(this,"Error"+ex.getMessage());
-         }
     }//GEN-LAST:event_btnUpdateActionPerformed
+
+    private void btnRefreshActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRefreshActionPerformed
+        // TODO add your handling code here:                                         
+    try {
+        DefaultTableModel model = (DefaultTableModel) JTable1.getModel();
+        model.setRowCount(0); 
+        
+        List<MedicineEntity> medicines = MedicineController.getAllMedicines();
+
+        for (MedicineEntity med : medicines) {
+            model.addRow(new Object[]{
+                med.getMedicineNo(),  
+                med.getMedicineName(),
+                med.getMedicinePrice(),
+                med.getMedicineStocks()
+            });
+        }
+        
+        JTable1.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
+        
+    } catch (Exception e) {
+        JOptionPane.showMessageDialog(this,
+            "Error refreshing data: " + e.getMessage(),
+            "Error",
+            JOptionPane.ERROR_MESSAGE);
+        e.printStackTrace();
+    }
+
+
+    }//GEN-LAST:event_btnRefreshActionPerformed
 
     /**
      * @param args the command line arguments
@@ -315,9 +404,9 @@ public class ViewLogs extends javax.swing.JFrame {
             logger.log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
-
+        
         /* Create and display the form */
-        java.awt.EventQueue.invokeLater(() -> new ViewLogs().setVisible(true));
+         java.awt.EventQueue.invokeLater(() -> new ViewLogs().setVisible(true));
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -325,6 +414,7 @@ public class ViewLogs extends javax.swing.JFrame {
     private javax.swing.JButton btnAdd;
     private javax.swing.JButton btnBack;
     private javax.swing.JButton btnDelete;
+    private javax.swing.JButton btnRefresh;
     private javax.swing.JButton btnUpdate;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JPanel jPanel1;
@@ -333,4 +423,5 @@ public class ViewLogs extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel4;
     private javax.swing.JScrollPane jScrollPane1;
     // End of variables declaration//GEN-END:variables
+
 }
